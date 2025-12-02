@@ -42,22 +42,25 @@ users=( ["user1"]=4001 ["user2"]=4002 ["user3"]=4003 )
 # Loop through the array and create users with specific UIDs
 for user in "${!users[@]}"; do
     uid=${users[$user]}
-         useradd -u $uid -b /remoteusers $user >/dev/null
+         useradd -u $uid -b /remoteusers $user &>/dev/null
     if [ $? -eq 0 ]; then
-        echo "User $user with UID $uid created successfully."
+        echo "User $user with UID $uid created successfully." &>/dev/null
     else
-        echo "Failed to create user $user with UID $uid."
+        echo "Failed to create user $user with UID $uid." &>/dev/null
     fi
 done
 
 echo "RUNNING TASK 7 ......................."
+dnf install nfs-utils -y -q &>/dev/null
+systemctl enable nfs-server --now &>/dev/null
+systemctl enable rpcbind --now &>/dev/null
 grep -qxF '/remoteusers *(rw,sync)' /etc/exports || echo '/remoteusers *(rw,sync,no_root_squash)' >> /etc/exports
 grep -qxF '/public *(ro,sync)' /etc/exports || echo '/public *(ro,sync,no_root_squash)' >> /etc/exports
 grep -qxF '/private *(rw,sync)' /etc/exports || echo '/private *(rw,sync,no_root_squash)' >> /etc/exports
 exportfs -avr  &>/dev/null
 firewall-cmd --add-service={nfs,mountd,rpc-bind} --permanent &>/dev/null
 firewall-cmd --reload &>/dev/null
-systemctl enable nfs-server --now
+systemctl enable nfs-server --now &>/dev/null
 
 echo "RUNNING TASK 8 ......................."
 IP_ADDR=$(ip route get 1 | awk '{print $7; exit}')
