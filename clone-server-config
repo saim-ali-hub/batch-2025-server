@@ -19,15 +19,16 @@ firewall-cmd --reload &>/dev/null
 
 echo "RUNNING TASK 4 ......................."
 cd /var/www/html
-if [ -d "saim_repo/.git" ]; then
+if [ -d "batch-2025-server/.git" ]; then
     echo "Repository already exists. Pulling latest changes..." &>/dev/null
-    cd saim_repo
+    cd batch-2025-server
     git pull origin main &>/dev/null
 else
-    echo "Cloning repository..."
-    git clone https://github.com/saim-ali-hub/saim_repo.git &>/dev/null
+    echo "Cloning repository..." &>/dev/null
+    git clone https://github.com/saim-ali-hub/batch-2025-server.git &>/dev/null
 fi
 systemctl restart httpd &>/dev/null
+
 echo "RUNNING TASK 5 ......................."
 mkdir /remoteusers &>/dev/null
 mkdir /public &>/dev/null
